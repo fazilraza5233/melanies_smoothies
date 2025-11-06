@@ -1,44 +1,36 @@
 # Import python packages
 import streamlit as st
 from snowflake.snowpark.functions import col
-# from snowflake.snowpark.context import get_active_session
 
-# Write directly to the app
-st.title(f":cup_with_straw: Customize Your Smoothie! :cup_with_straw: ")
+# Streamlit App Title
+st.title(":cup_with_straw: Customize Your Smoothie! :cup_with_straw:")
 st.write(
-  """Choose the fruites you want to add in your custom smoothie!
-  
-  """
+    """
+    Choose the fruits you want to add to your custom smoothie!
+    """
 )
 
-# option = st.selectbox(
-#     "What is your favourite fruit?",
-#     ("Banana", "Strawberries", "Peaches"),
-#     index=None,
-#     placeholder="Select favourite fruit...",
-# )
-
-# st.write("You selected:", option)
-
+# Create a Snowflake connection
 cnx = st.connection("snowflake")
 session = cnx.session()
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
-# st.dataframe(data=my_dataframe, use_container_width=True)
 
-ingediants_list = st.multiselect('Choose upto 5 ingrediants: ', my_dataframe)
-if ingediants_list:
-    # st.write(ingediants_list);
-    # st.text(ingediants_list);
-    ingredients_string = ''
-    for fruit_chosen in ingediants_list:
-        ingredients_string += fruit_chosen + ' '
-    my_insert_stmt = """ insert into smoothies.public.orders(ingredients)
-            values ('""" + ingredients_string + """')"""
-    # st.write(ingredients_string)
-    time_to_insert = st.button("Submit Order")
-    if time_to_insert:
+# Fetch fruit options from Snowflake
+my_dataframe = session.table("smoothies.public.fruit_options").select(col("FRUIT_NAME")).to_pandas()
+
+# Multiselect for fruit ingredients
+ingredients_list = st.multiselect("Choose up to 5 ingredients:", my_dataframe["FRUIT_NAME"].tolist())
+
+if ingredients_list:
+    ingredients_string = ", ".join(ingredients_list)
+
+    # Prepare insert statement safely
+    my_insert_stmt = f"""
+        INSERT INTO smoothies.public.orders (ingredients)
+        VALUES ('{ingredients_string}')
+    """
+
+    # Submit button
+    if st.button("Submit Order"):
         session.sql(my_insert_stmt).collect()
-        st.success('Ordered Successfully!')
-
-# st.write(my_insert_stmt)
+        st.success("✅ Order submitted successfully!")
 
