@@ -17,6 +17,8 @@ session = cnx.session()
 # Fetch fruit options from Snowflake
 my_dataframe = session.table("smoothies.public.fruit_options").select(col("FRUIT_NAME")).to_pandas()
 
+smoothie_name = st.text_input("Give your smoothie a name:", placeholder="e.g., Tropical Paradise, Berry Blast...")
+
 # Multiselect for fruit ingredients
 ingredients_list = st.multiselect("Choose up to 5 ingredients:", my_dataframe["FRUIT_NAME"].tolist())
 
