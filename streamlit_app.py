@@ -28,7 +28,7 @@ if ingredients_list:
     # Prepare insert statement safely
     my_insert_stmt = f"""
         INSERT INTO smoothies.public.orders (NAME_ON_ORDER, ingredients)
-        VALUES ('{ingredients_string}', '{ingredients_string}')
+        VALUES ('{smoothie_name}', '{ingredients_string}')
     """
 
     # Submit button
