@@ -28,7 +28,10 @@ ingredients_list = st.multiselect("Choose up to 5 ingredients:", my_dataframe["F
 order_filled = st.checkbox("Mark order as filled", value=False)
 
 if ingredients_list:
-    ingredients_string = " ".join(ingredients_list)
+    ingredients_string = ''
+
+    for fruit_choosen in ingredients_list:
+        ingredients_string += fruit_choosen + " "
 
     # Display order preview
     st.subheader("Order Preview:")
